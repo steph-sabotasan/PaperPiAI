@@ -7,8 +7,6 @@ e-ink display, i.e. low-colour palette styles and simple designs.
 
 ![Blooming Great!](https://raw.githubusercontent.com/dylski/PaperPiAI/refs/heads/main/assets/paperpiai_examples.jpg)
 
-Running stable diffusion on device has the advantage that once set up the device is 
-
 Once set up the picture frame is fully self-sufficient, able to generate unique images with no internet access until the end of time (or a hardware failure - which ever comes first).
 
 Each image takes about 30 minutes to generate and about 30 seconds to refresh to the screen.
