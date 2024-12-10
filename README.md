@@ -6,7 +6,7 @@ Standalone Raspberry Pi Zero 2 running stable diffusion to generate infinite
 pictures on an e-ink display. Default set-up is of flowers in styles that I've found to work particularly well on the Inky Impressions 7.3" 7-colour 
 e-ink display.
 
-![Blooming Great!](https://raw.githubusercontent.com/vitoplantamura/OnnxStream/master/assets/paperpiai_examples.jpg)
+![Blooming Great!](https://raw.githubusercontent.com/dylski/PaperPiAI/refs/heads/main/assets/paperpiai_examples.jpg)
 
 Each image is unique and takes about 30 minutes to generate. Obviously you can change the list of image subjects and styles to anything you like in the `generate_picture.py` file. 
 
