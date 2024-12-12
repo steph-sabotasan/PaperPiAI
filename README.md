@@ -33,20 +33,28 @@ run `sudo rasp-config` and enable **SPI interface** and **Ic2 interface**
 
 ## Install required components
 
-`scripts/install.sh` has all the commands needed to install all the required system packages, python libraries and [OnnxStream](https://github.com/vitoplantamura/OnnxStream) - Stable Diffusion for the Raspberry Pi Zero.
-If you are feeling brave then run `scripts/install.sh` in the directory you want to install everything, otherwise run each command manually.
+Firstly download this repo somewhere with `git clone https://github.com/dylski/PaperPiAI.git`
+
+`PaperPiAI/scripts/install.sh` has all the commands needed to install all the required system packages, python libraries and [OnnxStream](https://github.com/vitoplantamura/OnnxStream) - Stable Diffusion for the Raspberry Pi Zero.
+If you are feeling brave then run `install.sh` in the directory you want to install everything, otherwise run each command manually.
+
+The whole process can take several hours. The build process can be sped up if you append ` -- -j4`  or ` -- -all` to the `cmake --build . --config Release` lines in `install.sh`. This instructs the compiler to use four cores or all cores, respectively, although I haven't tried this on my RPi-Zero yet.
+
+Once installed, you need to edit the `installed_dir` path in `PaperPiAI/src/generate_picture.py` to point to you installed everything, i.e. where `OnnxStream` and the `models` folders were created.
+
+Apologies for the rather manual approach - my install-fu is not up to scratch!
 
 # Generating and displaying
 
-`python generate_picture.py output_dir`
+`python PaperPiAI/src/generate_picture.py output_dir`
 
 Generates a new image and saves two copies to output_dir. One with a unique name based on the prompt, another as 'output.png' to make it simple to display.
 
 Note that if you install the python packages into a virtual env (as the script above does) then you need to use that python instance, e.g.:
 
-`<install_path>/venv/bin/python <path_to>/generate_picture.py /tmp`
+`<install_path>/venv/bin/python PaperPiAI/src/generate_picture.py /tmp`
 
-To send to the display use `python display_picture.py <image_name>`. Use the `-p` flag if the display is in portrait mode.
+To send to the display use `python PaperPiAI/src/display_picture.py <image_name>`. Use the `-p` flag if the display is in portrait mode.
 
 To automate this I make a script that runs these two commands in sequence and put an entry in crontab to call it once a day.
 
