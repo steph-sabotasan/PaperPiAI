@@ -1,51 +1,31 @@
 # Use the official Python 3.11 slim image as the base image
 FROM python:3.11-slim
 
-# Install dependencies
+# Set environment variables
+ENV INSTALL_DIR=/app
+
+# Install basic dependencies required for the install script
 RUN apt-get update && \
     apt-get install -y \
-    build-essential \
-    python3-dev \
-    python3-pip \
-    python3-venv \
-    libopencv-dev \
-    imagemagick \
-    git \
-    git-lfs \
-    tmux \
-    vim \
-    cmake \
-    libprotobuf-dev \
-    libprotoc-dev \
-    protobuf-compiler && \
+    sudo \
+    bash && \
     rm -rf /var/lib/apt/lists/*
 
-# Clone XNNPACK repository and initialize submodules
-RUN git clone --recurse-submodules https://github.com/google/XNNPACK.git /app/XNNPACK
+# Set the working directory
+WORKDIR ${INSTALL_DIR}
 
-# List contents of /app/XNNPACK to verify correct cloning
-RUN ls -R /app/XNNPACK
+# Copy the install.sh script into the container
+COPY scripts/install.sh ${INSTALL_DIR}/install.sh
 
-# Clone OnnxStream repository and build
-RUN git clone https://github.com/vitoplantamura/OnnxStream.git && \
-    cd OnnxStream && \
-    cd src && \
-    rm -rf build && \
-    mkdir build && cd build && \
-    cmake -DMAX_SPEED=ON -DOS_LLM=OFF -DOS_CUDA=OFF -DXNNPACK_DIR="/app/XNNPACK" -DCMAKE_INCLUDE_PATH="/app/XNNPACK" .. && \
-    cmake --build . --config Release && \
-    cd /app
+# Ensure the script is executable
+RUN chmod +x ${INSTALL_DIR}/install.sh
 
-# Set environment variables for model paths
-ENV SD_BIN="/app/OnnxStream/src/build/sd"
-ENV SD_MODEL="/app/stable_diffusion_models/stable-diffusion-xl-turbo-1.0-onnxstream"
+# Run the install.sh script
+RUN ${INSTALL_DIR}/install.sh
 
-# Create output directories
-RUN mkdir -p /app/output_images /app/display_images
+# Copy the display_picture and generate_picture scripts
+COPY src/display_picture.py ${INSTALL_DIR}/display_picture.py
+COPY src/generate_picture.py ${INSTALL_DIR}/generate_picture.py
 
-# Add the generate_picture.py and display_image.py scripts
-COPY src/generate_picture.py /app/generate_picture.py
-COPY src/display_picture.py /app/display_picture.py
+CMD ["python", "/app/generate_picture.py", "tmp"]
 
-# Set the default command to run when the container starts (e.g., generating an image)
-CMD ["python3", "/app/generate_picture.py", "/app/output_images"]
