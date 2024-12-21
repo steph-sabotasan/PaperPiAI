@@ -48,8 +48,8 @@ ENV SD_MODEL="/app/stable_diffusion_models/stable-diffusion-xl-turbo-1.0-onnxstr
 RUN mkdir -p /app/output_images /app/display_images
 
 # Add the generate_picture.py and display_image.py scripts
-COPY generate_picture.py /app/generate_picture.py
-COPY display_image.py /app/display_image.py
+COPY ./src/generate_picture.py /app/generate_picture.py
+COPY ./src/display_image.py /app/display_image.py
 
 # Set the default command to run when the container starts (e.g., generating an image)
 CMD ["python3", "/app/generate_picture.py", "/app/output_images"]
