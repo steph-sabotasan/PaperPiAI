@@ -14,18 +14,25 @@ RUN apt-get update && \
     git-lfs \
     tmux \
     vim \
-    cmake && \
+    cmake \
+    libprotobuf-dev \
+    libprotoc-dev \
+    protobuf-compiler && \
     rm -rf /var/lib/apt/lists/*
 
 # Clone XNNPACK repository and initialize submodules
 RUN git clone --recurse-submodules https://github.com/google/XNNPACK.git /app/XNNPACK
 
-# Clone OnnxStream repository
+# List contents of /app/XNNPACK to verify correct cloning
+RUN ls -R /app/XNNPACK
+
+# Clone OnnxStream repository and build
 RUN git clone https://github.com/vitoplantamura/OnnxStream.git && \
     cd OnnxStream && \
     cd src && \
+    rm -rf build && \
     mkdir build && cd build && \
-    cmake -DMAX_SPEED=ON -DOS_LLM=OFF -DOS_CUDA=OFF -DXNNPACK_DIR="/app/XNNPACK" .. && \
+    cmake -DMAX_SPEED=ON -DOS_LLM=OFF -DOS_CUDA=OFF -DXNNPACK_DIR="/app/XNNPACK" -DCMAKE_INCLUDE_PATH="/app/XNNPACK" .. && \
     cmake --build . --config Release && \
     cd /app
 
