@@ -49,7 +49,7 @@ RUN mkdir -p /app/output_images /app/display_images
 
 # Add the generate_picture.py and display_image.py scripts
 COPY src/generate_picture.py /app/generate_picture.py
-COPY src/display_image.py /app/display_image.py
+COPY src/display_picture.py /app/display_picture.py
 
 # Set the default command to run when the container starts (e.g., generating an image)
 CMD ["python3", "/app/generate_picture.py", "/app/output_images"]
