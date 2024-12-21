@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies including build tools
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y \
     build-essential \
@@ -17,25 +17,39 @@ RUN apt-get update && \
     git-lfs \
     tmux \
     vim \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 RUN python3 -m venv venv && \
     . venv/bin/activate && \
     pip install --upgrade pip && \
-    pip install --no-cache-dir opencv_contrib_python inky[rpi]==1.5.0 pillow
+    pip install --no-cache-dir \
+    opencv_contrib_python \
+    inky[rpi]==1.5.0 \
+    pillow \
+    argparse \
+    numpy
 
-# Clone necessary repositories
-RUN git clone https://github.com/google/XNNPACK.git && \
-    cd XNNPACK && \
-    git checkout 1c8ee1b68f3a3e0847ec3c53c186c5909fa3fbd3 && \
-    mkdir build && cd build && \
-    cmake -DXNNPACK_BUILD_TESTS=OFF -DXNNPACK_BUILD_BENCHMARKS=OFF .. && \
-    cmake --build . --config Release && \
-    cd /app
-
+# Clone necessary repositories and build
 RUN git clone https://github.com/vitoplantamura/OnnxStream.git && \
     cd OnnxStream && \
     cd src && \
     mkdir build && cd build && \
-    cmake -DMAX_S
+    cmake -DMAX_SPEED=ON -DOS_LLM=OFF -DOS_CUDA=OFF -DXNNPACK_DIR="/app/XNNPACK" .. && \
+    cmake --build . --config Release && \
+    cd /app
+
+# Set environment variables for model paths
+ENV SD_BIN="/app/OnnxStream/src/build/sd"
+ENV SD_MODEL="/app/stable_diffusion_models/stable-diffusion-xl-turbo-1.0-onnxstream"
+
+# Create output directories
+RUN mkdir -p /app/output_images /app/display_images
+
+# Add the generate_picture.py and display_image.py scripts
+COPY generate_picture.py /app/generate_picture.py
+COPY display_image.py /app/display_image.py
+
+# Set the default command to run when the container starts (e.g., generating an image)
+CMD ["python3", "/app/generate_picture.py", "/app/output_images"]
