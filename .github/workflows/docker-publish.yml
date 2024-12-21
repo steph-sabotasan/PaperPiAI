@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:  # This enables manual trigger of the workflow
 
 jobs:
   build:
@@ -17,8 +18,8 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
-        username: ${{ secrets.GITHUB_ACTOR }}
-        password: ${{ secrets.GHCR_PAT }}
+        username: ${{ secrets.GITHUB_ACTOR }}  # Use GitHub username
+        password: ${{ secrets.GHCR_PAT }}      # Use the PAT stored in GitHub secrets
 
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v4
